@@ -31,6 +31,20 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 // login user -- POST
+if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    $user = new User();
+    $result = $user->loginUser($email, $password);
+    if (!$result) {
+        header('HTTP/1.1 403');
+        die();
+    }
+    echo $result["user_id"];
+}
+
 // get user -- GET
 // get users -- GET
 
