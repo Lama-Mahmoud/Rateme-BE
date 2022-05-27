@@ -65,6 +65,7 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
     echo json_encode($result);
 }
 
+///////////////////////////////
 // creat admin -- POST
 if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -79,6 +80,19 @@ if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
     echo $affected_rows;
 }
 // login admin -- POST
+if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    $admin = new Admin();
+    $result = $admin->loginAdmin($email, $password);
+    if (!$result) {
+        header('HTTP/1.1 403');
+        die();
+    }
+    echo $result["admin_id"];
+}
 
 // create restaurant -- POST
 // get restaurants -- GET
