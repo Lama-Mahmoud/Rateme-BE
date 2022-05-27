@@ -27,27 +27,51 @@ class Database
         }
     }
 
-    // class method that is accessible from subclasses in case of adding new subclasses
-    // by which each added subclass will represent a table in the db
-    public function query($query_string, $params_string, ...$params)
+    // class method that is accessible from subclasses only
+    protected function query($query_string, $params_string = "", $params = [])
     {
         // preparing the query
         $prepared = $this->connection->prepare($query_string);
-        // in case of passing a $params assoc array (param => type)
-        // looping over it and binding the values to the 
-        if (count($params) > 0) {
-            // foreach ($params as $type => $param) {
-            $prepared->bind_param($params_string, ...$params);
-            // }
-        }
-        // executing the query, getting results, and loop over the 
-        // fetched records to construct the array to be returned
+
+        // spreading the params and binding them to the prepared
+        if ($params) $prepared->bind_param($params_string, ...$params);
+
+        // executing the query
         $prepared->execute();
-        $result = $prepared->get_result();
+
+        // returning an assoc array, the prepared key to be used in the select queries
+        // the affected_rows to be used in the insertion queries
+        return [
+            'prepared' => $prepared,
+            'affected_rows' => $this->connection->affected_rows
+        ];
+    }
+
+    // class method that is accessible from subclasses only, to process select queries
+    // and return all the rows
+    protected function getRows($query_string, $params_string = "", $params = [])
+    {
+        $prepared = $this->query($query_string, $params_string, $params);
+        $result = $prepared['prepared']->get_result();
         $rows = [];
-        while ($record = $result->fetch_assoc()) {
-            $rows[] = $record;
-        }
+        while ($record = $result->fetch_assoc()) $rows[] = $record;
+
         return $rows;
     }
+
+    // class method that is accessible from subclasses only, to process select queries
+    // that returns only one row
+    protected function getRow($query_string, $params_string = "", $params = [])
+    {
+        $query_string .= " LIMIT 1";
+        $rows = $this->getRows($query_string, $params_string, $params);
+        if (count($rows) > 0) return $rows[0];
+        return false;
+    }
+
+    // public function createNewUser($username, $password, $firstname, $lastname)
+    // {
+    //     $this->query($query_string, $params_string, $params);
+    //     return $this->connection->affected_rows == 1 ? true : false;
+    // }
 }
