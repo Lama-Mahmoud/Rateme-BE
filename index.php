@@ -94,6 +94,7 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
     echo $result["admin_id"];
 }
 
+///////////////////////////////////
 // create restaurant -- POST
 // get restaurants -- GET
 // get restaurant -- GET
