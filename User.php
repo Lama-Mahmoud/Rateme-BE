@@ -40,5 +40,9 @@ class User extends Database
     }
     public function getUsers()
     {
+        $query_string = "SELECT email, first_name, last_name, dob, register_date, profile_pic, gender
+                        FROM $this->table";
+        $result = $this->getRows($query_string);
+        return $result;
     }
 }

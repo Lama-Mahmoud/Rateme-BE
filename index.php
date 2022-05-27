@@ -46,7 +46,7 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     echo $result["user_id"];
 }
 
-// get user -- GET
+// get one user -- GET
 if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $user_id = $_GET["user_id"];
@@ -54,10 +54,16 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $user = new User();
     $result = $user->getOneUser($user_id);
 
-    print_r($result);
+    echo json_encode($result);
 }
 
 // get users -- GET
+if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $user = new User();
+    $result = $user->getUsers();
+
+    echo json_encode($result);
+}
 
 // login admin -- POST
 
