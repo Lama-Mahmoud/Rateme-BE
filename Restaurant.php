@@ -1,7 +1,7 @@
 <?php
 include_once("Database.php");
 
-class User extends Database
+class Restaurant extends Database
 {
     private $table = "restaurants";
 
