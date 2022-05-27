@@ -27,5 +27,9 @@ class Restaurant extends Database
     }
     public function getRestaurants()
     {
+        $query_string = "SELECT rest_id, rest_name, rest_desc, rest_pic
+                        FROM $this->table";
+        $result = $this->getRows($query_string);
+        return $result;
     }
 }
