@@ -1,6 +1,7 @@
 <?php
 include_once("User.php");
 include_once("Admin.php");
+include_once("Restaurant.php");
 
 // echo $_SERVER['REQUEST_URI'];
 // $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -96,6 +97,20 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
 ///////////////////////////////////
 // create restaurant -- POST
+if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $rest_name = $_POST["rest_name"];
+    $rest_desc = $_POST["rest_desc"];
+    $rest_pic = $_POST["rest_pic"];
+
+    $restaurant = new Restaurant();
+    $affected_rows = $restaurant->createRestaurant(
+        $rest_name,
+        $rest_desc,
+        $rest_pic
+    );
+    echo $affected_rows;
+}
 // get restaurants -- GET
 // get restaurant -- GET
 
