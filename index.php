@@ -111,8 +111,17 @@ if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POS
     );
     echo $affected_rows;
 }
+// get one restaurant -- GET
+if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET") {
+
+    $rest_id = $_GET["rest_id"];
+
+    $user = new Restaurant();
+    $result = $user->getOneRestaurant($rest_id);
+
+    echo json_encode($result);
+}
 // get restaurants -- GET
-// get restaurant -- GET
 
 // create review -- POST
 // update review -- POST
