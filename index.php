@@ -1,4 +1,9 @@
 <?php
+
+// echo $_SERVER['REQUEST_URI'];
+
+// $_SERVER['REQUEST_METHOD'] === 'POST'
+
 // include_once("Database.php");
 
 // $db = new Database();
