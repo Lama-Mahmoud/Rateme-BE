@@ -22,7 +22,7 @@ CREATE TABLE `restaurants` (
   `rest_id` serial,
   `rest_name` varchar(255),
   `rest_desc` text,
-  `rest_pic` blob,
+  `rest_pic` varchar(255),
   PRIMARY KEY (`rest_id`)
 );
 
