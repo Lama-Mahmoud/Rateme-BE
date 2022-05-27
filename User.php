@@ -16,6 +16,7 @@ class User extends Database
         $result = $this->query($query_string, $validation_string, $params);
         return $result["affected_rows"];
     }
+
     public function loginUser($email, $password)
     {
         $hashed_password = hash("sha256", $password);
@@ -26,8 +27,16 @@ class User extends Database
         $result = $this->getRow($query_string, $validation_string, $params);
         return $result;
     }
-    public function getOneUser()
+
+    public function getOneUser($user_id)
     {
+        $query_string = "SELECT email, first_name, last_name, dob, register_date, profile_pic, gender
+                        FROM $this->table
+                        WHERE user_id = ?";
+        $validation_string = "i";
+        $params = [$user_id];
+        $result = $this->getRow($query_string, $validation_string, $params);
+        return $result;
     }
     public function getUsers()
     {
