@@ -1,22 +1,29 @@
 <?php
+include_once("Database.php");
+$db = new Database();
 
 // echo $_SERVER['REQUEST_URI'];
-
 // $_SERVER['REQUEST_METHOD'] === 'POST'
 
-// include_once("Database.php");
+// create user/sign up -- POST
+// login user -- POST
+// get user -- GET
+// get users -- GET
 
-// $db = new Database();
+// login admin -- POST
 
-// $returned = [];
+// create restaurant -- POST
+// get restaurants -- GET
+// get restaurant -- GET
 
-// $admins = $db->getRows("Select * from admins");
-// $returned["all_admins"] = $admins;
+// create review -- POST
+// update review -- POST
+// get reviews -- GET
+// get review -- GET
 
-// $admins = $db->getRows("Select admin_id from admins where admin_id = ?", "i", [1]);
-// $returned["selected_admins"] = $admins;
 
-// $result = $db->query("insert into admins (email, pswd_hash) value (?,?)", "ss", ["admin333", "hashedhashedhashed"]);
-// $returned["insertion_count"] = $result['affected_rows'];
+
+
+
 
 // echo json_encode($returned);
