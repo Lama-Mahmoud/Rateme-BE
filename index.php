@@ -1,6 +1,6 @@
 <?php
 include_once("User.php");
-
+include_once("Admin.php");
 
 // echo $_SERVER['REQUEST_URI'];
 // $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -65,6 +65,19 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
     echo json_encode($result);
 }
 
+// creat admin -- POST
+if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $email = $_POST["email"];
+    $password = $_POST["password"];
+
+    $user = new Admin();
+    $affected_rows = $user->createAdmin(
+        $email,
+        $password,
+    );
+    echo $affected_rows;
+}
 // login admin -- POST
 
 // create restaurant -- POST
