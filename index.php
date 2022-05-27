@@ -1,4 +1,7 @@
 <?php
+
+use LDAP\Result;
+
 include_once("User.php");
 include_once("Admin.php");
 include_once("Restaurant.php");
@@ -122,6 +125,12 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
     echo json_encode($result);
 }
 // get restaurants -- GET
+if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $restaurant = new Restaurant();
+    $result = $restaurant->getRestaurants();
+
+    echo json_encode($result);
+}
 
 // create review -- POST
 // update review -- POST
