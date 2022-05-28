@@ -84,6 +84,7 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $user = new User();
     $result = $user->getOneUser($user_id);
+    $result["profile_pic"] = encodeBase64($result["profile_pic"]);
 
     echo json_encode($result);
 }
@@ -92,6 +93,9 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $user = new User();
     $result = $user->getUsers();
+    foreach ($result as $row) {
+        $row["profile_pic"] = encodeBase64($row["profile_pic"]);
+    }
 
     echo json_encode($result);
 }
