@@ -16,4 +16,7 @@ function saveImage($decoded_image_date, $identifier, $id)
 
 function encodeBase64($image_path)
 {
+    $img = file_get_contents($image_path);
+    $img_encoded = base64_encode($img);
+    return $img_encoded;
 }
