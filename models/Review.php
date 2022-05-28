@@ -37,5 +37,9 @@ class Review extends Database
     }
     public function getReviews()
     {
+        $query_string = "SELECT user_id, review_content, rate
+                        FROM $this->table";
+        $result = $this->getRows($query_string);
+        return $result;
     }
 }
