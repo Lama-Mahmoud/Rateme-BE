@@ -137,11 +137,14 @@ if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POS
     $rest_desc = $_POST["rest_desc"];
     $rest_pic = $_POST["rest_pic"];
 
+    $decoded_rest_pic = decodeBase64($rest_pic);
+    $decoded_rest_pic_path = saveImage($decoded_rest_pic, "restaurant", $rest_name);
+
     $restaurant = new Restaurant();
     $affected_rows = $restaurant->createRestaurant(
         $rest_name,
         $rest_desc,
-        $rest_pic
+        $decoded_rest_pic_path
     );
     echo $affected_rows;
 }
