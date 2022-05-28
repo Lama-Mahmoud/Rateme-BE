@@ -32,7 +32,30 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     );
     echo $affected_rows;
 }
+//update user -- POST
+if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
+    $user_id = $_POST["user_id"];
+    $email = $_POST["email"];
+    $first_name = $_POST["first_name"];
+    $last_name = $_POST["last_name"];
+    $dob = $_POST["dob"];
+    $profile_pic = $_POST["profile_pic"];
+    $gender = $_POST["gender"];
+
+    $user = new User();
+    //$user_id, $email, $first_name, $last_name, $dob, $profile_pic, $gender
+    $affected_rows = $user->updateUser(
+        $user_id,
+        $email,
+        $first_name,
+        $last_name,
+        $dob,
+        $profile_pic,
+        $gender
+    );
+    echo $affected_rows;
+}
 // login user -- POST
 if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
