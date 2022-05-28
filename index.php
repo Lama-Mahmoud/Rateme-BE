@@ -133,13 +133,24 @@ if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET")
 }
 
 // create review -- POST
+if ($_GET["action"] == "createReview" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $user_id = $_POST["user_id"];
+    $rest_id = $_POST["rest_id"];
+    $review_content = $_POST["review_content"];
+    $rate = $_POST["rate"];
+
+    $review = new Review();
+    $affected_rows = $review->createReview(
+        $user_id,
+        $rest_id,
+        $review_content,
+        $rate
+    );
+    echo $affected_rows;
+}
 // update review status-- POST
 // get reviews -- GET
 // get review -- GET
-
-
-
-
-
 
 // echo json_encode($returned);
