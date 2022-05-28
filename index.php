@@ -3,6 +3,7 @@ include_once("models/User.php");
 include_once("models/Admin.php");
 include_once("models/Restaurant.php");
 include_once("models/Review.php");
+include_once("utils/image_utils.php");
 
 // echo $_SERVER['REQUEST_URI'];
 // $_SERVER['REQUEST_METHOD'] === 'POST'

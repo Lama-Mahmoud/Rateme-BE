@@ -6,10 +6,10 @@ function decodeBase64($base64_image_data)
     return $img;
 }
 
-function saveImage($decoded_image_date, $identifier, $id)
+function saveImage($decoded_image_date, $category, $identifier)
 {
     $date = new DateTime();
-    $path = "images/$identifier/$id-$date->getTimestamp()";
+    $path = "images/$category/$identifier-$date->getTimestamp()";
     file_put_contents($path, $decoded_image_date);
     return $path;
 }
