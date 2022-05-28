@@ -133,7 +133,7 @@ if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET")
 }
 
 // create review -- POST
-// update review -- POST
+// update review status-- POST
 // get reviews -- GET
 // get review -- GET
 
