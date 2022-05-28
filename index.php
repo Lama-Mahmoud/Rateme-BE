@@ -93,8 +93,10 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $user = new User();
     $result = $user->getUsers();
-    foreach ($result as $row) {
-        $row["profile_pic"] = encodeBase64($row["profile_pic"]);
+    for ($i = 0; $i < count($result); $i++) {
+        if ($result[$i]["profile_pic"]) {
+            $result[$i]["profile_pic"] = encodeBase64($result[$i]["profile_pic"]);
+        }
     }
 
     echo json_encode($result);
@@ -163,8 +165,10 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
 if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $restaurant = new Restaurant();
     $result = $restaurant->getRestaurants();
-    foreach ($result as $row) {
-        $row["rest_pic"] = encodeBase64($row["rest_pic"]);
+    for ($i = 0; $i < count($result); $i++) {
+        if ($result[$i]["rest_pic"]) {
+            $result[$i]["rest_pic"] = encodeBase64($result[$i]["rest_pic"]);
+        }
     }
 
     echo json_encode($result);
