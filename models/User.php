@@ -16,6 +16,20 @@ class User extends Database
         $result = $this->query($query_string, $validation_string, $params);
         return $result["affected_rows"];
     }
+    public function updateUser($user_id, $email, $first_name, $last_name, $dob, $password, $profile_pic, $gender)
+    {
+        $hashed_password = hash("sha256", $password);
+        $query_string = "UPDATE $this->table 
+                        SET email = ?, first_name = ?, last_name = ?, dob = ?, password = ?, profile_pic = ?, gender = ?
+                        WHERE review_id = ?";
+        $query_string = "INSERT INTO $this->table 
+                        (email, first_name, last_name, dob, pswd_hash, register_date, profile_pic, gender) 
+                        VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP, ?, ?)";
+        $validation_string = "ssssssi";
+        $params = [$email, $first_name, $last_name, $dob, $hashed_password, $profile_pic, $gender];
+        $result = $this->query($query_string, $validation_string, $params);
+        return $result["affected_rows"];
+    }
 
     public function loginUser($email, $password)
     {
