@@ -21,6 +21,9 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $profile_pic = $_POST["profile_pic"];
     $gender = $_POST["gender"];
 
+    $decoded_profile_pic = decodeBase64($profile_pic);
+    $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+
     $user = new User();
     $affected_rows = $user->createUser(
         $email,
@@ -28,7 +31,7 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
         $last_name,
         $dob,
         $password,
-        $profile_pic,
+        $decoded_profile_pic_path,
         $gender
     );
     echo $affected_rows;
@@ -44,15 +47,17 @@ if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $profile_pic = $_POST["profile_pic"];
     $gender = $_POST["gender"];
 
+    $decoded_profile_pic = decodeBase64($profile_pic);
+    $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+
     $user = new User();
-    //$user_id, $email, $first_name, $last_name, $dob, $profile_pic, $gender
     $affected_rows = $user->updateUser(
         $user_id,
         $email,
         $first_name,
         $last_name,
         $dob,
-        $profile_pic,
+        $decoded_profile_pic_path,
         $gender
     );
     echo $affected_rows;
