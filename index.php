@@ -160,6 +160,13 @@ if ($_GET["action"] == "updateReviewStatus" && $_SERVER["REQUEST_METHOD"] === "P
     echo $affected_rows;
 }
 // get restaurant reviews -- GET
+if ($_GET["action"] == "getAcceptedRestaurantReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    $rest_id = $_GET["rest_id"];
+    $review = new Review();
+    $result = $review->getAcceptedRestaurantReviews($rest_id);
+
+    echo json_encode($result);
+}
 // get reviews -- GET
 
 // echo json_encode($returned);
