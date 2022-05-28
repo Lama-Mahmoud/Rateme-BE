@@ -25,8 +25,15 @@ class Review extends Database
         $result = $this->query($query_string, $validation_string, $params);
         return $result["affected_rows"];
     }
-    public function getRestaurantReviews()
+    public function getAcceptedRestaurantReviews($rest_id)
     {
+        $query_string = "SELECT user_id, review_content, rate
+                        FROM $this->table
+                        WHERE rest_id = ? and status = 1";
+        $validation_string = "i";
+        $params = [$rest_id];
+        $result = $this->getRows($query_string, $validation_string, $params);
+        return $result;
     }
     public function getReviews()
     {
