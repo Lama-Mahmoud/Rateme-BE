@@ -1,11 +1,8 @@
 <?php
-
-use LDAP\Result;
-
-include_once("User.php");
-include_once("Admin.php");
-include_once("Restaurant.php");
-include_once("Review.php");
+include_once("models/User.php");
+include_once("models/Admin.php");
+include_once("models/Restaurant.php");
+include_once("models/Review.php");
 
 // echo $_SERVER['REQUEST_URI'];
 // $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -162,7 +159,7 @@ if ($_GET["action"] == "updateReviewStatus" && $_SERVER["REQUEST_METHOD"] === "P
     );
     echo $affected_rows;
 }
+// get restaurant reviews -- GET
 // get reviews -- GET
-// get review -- GET
 
 // echo json_encode($returned);
