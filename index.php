@@ -151,6 +151,17 @@ if ($_GET["action"] == "createReview" && $_SERVER["REQUEST_METHOD"] === "POST") 
     echo $affected_rows;
 }
 // update review status-- POST
+if ($_GET["action"] == "updateReviewStatus" && $_SERVER["REQUEST_METHOD"] === "POST") {
+
+    $review_id = $_POST["review_id"];
+    $new_status = $_POST["new_status"];
+    $review = new Review();
+    $affected_rows = $review->updateReviewStatus(
+        $review_id,
+        $new_status
+    );
+    echo $affected_rows;
+}
 // get reviews -- GET
 // get review -- GET
 
