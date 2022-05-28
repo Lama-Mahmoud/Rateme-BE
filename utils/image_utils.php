@@ -8,8 +8,8 @@ function decodeBase64($base64_image_data)
 
 function saveImage($decoded_image_date, $category, $identifier)
 {
-    $date = new DateTime();
-    $path = "images/$category/$identifier-$date->getTimestamp()";
+    $timestamp = time();
+    $path = "images/$category/$identifier-$timestamp";
     file_put_contents($path, $decoded_image_date);
     return $path;
 }
