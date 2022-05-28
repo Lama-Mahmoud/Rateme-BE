@@ -155,6 +155,7 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
 
     $user = new Restaurant();
     $result = $user->getOneRestaurant($rest_id);
+    $result["rest_pic"] = encodeBase64($result["rest_pic"]);
 
     echo json_encode($result);
 }
@@ -162,6 +163,9 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
 if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $restaurant = new Restaurant();
     $result = $restaurant->getRestaurants();
+    foreach ($result as $row) {
+        $row["rest_pic"] = encodeBase64($row["rest_pic"]);
+    }
 
     echo json_encode($result);
 }
