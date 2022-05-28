@@ -9,8 +9,8 @@ class User extends Database
     {
         $hashed_password = hash("sha256", $password);
         $query_string = "INSERT INTO $this->table 
-                        (email, first_name, last_name, dob, pswd_hash, profile_pic, gender) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        (email, first_name, last_name, dob, pswd_hash, register_date, profile_pic, gender) 
+                        VALUES (?, ?, ?, ?, ?, UTC_TIMESTAMP, ?, ?)";
         $validation_string = "ssssssi";
         $params = [$email, $first_name, $last_name, $dob, $hashed_password, $profile_pic, $gender];
         $result = $this->query($query_string, $validation_string, $params);

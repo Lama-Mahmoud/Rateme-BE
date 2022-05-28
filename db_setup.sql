@@ -12,7 +12,7 @@ CREATE TABLE `users` (
   `last_name` varchar(255),
   `dob` date,
   `pswd_hash` varchar(255),
-  `register_date` date,
+  `register_date` TIMESTAMP,
   `profile_pic` varchar(255),
   `gender` int,
   PRIMARY KEY (`user_id`)
