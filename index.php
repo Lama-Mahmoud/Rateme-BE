@@ -5,6 +5,7 @@ use LDAP\Result;
 include_once("User.php");
 include_once("Admin.php");
 include_once("Restaurant.php");
+include_once("Review.php");
 
 // echo $_SERVER['REQUEST_URI'];
 // $_SERVER['REQUEST_METHOD'] === 'POST'

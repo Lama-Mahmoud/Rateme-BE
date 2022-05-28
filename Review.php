@@ -15,8 +15,15 @@ class Review extends Database
         $result = $this->query($query_string, $validation_string, $params);
         return $result["affected_rows"];
     }
-    public function updateReviewStatus()
+    public function updateReviewStatus($review_id, $new_status)
     {
+        $query_string = "UPDATE $this->table 
+                        SET status = ?
+                        WHERE review_id = ?";
+        $validation_string = "ii";
+        $params = [$new_status, $review_id];
+        $result = $this->query($query_string, $validation_string, $params);
+        return $result["affected_rows"];
     }
     public function getRestaurantReviews()
     {
