@@ -18,5 +18,6 @@ function encodeBase64($image_path)
 {
     $img = file_get_contents($image_path);
     $img_encoded = base64_encode($img);
+    $img_encoded = "data:image/jpeg;base64," . $img_encoded;
     return $img_encoded;
 }
