@@ -4,11 +4,7 @@ include_once("models/Admin.php");
 include_once("models/Restaurant.php");
 include_once("models/Review.php");
 include_once("utils/image_utils.php");
-
-// echo $_SERVER['REQUEST_URI'];
-// $_SERVER['REQUEST_METHOD'] === 'POST'
-
-// print("<pre>" . print_r($_POST, true) . "</pre>");
+include_once("utils/token_utils.php");
 
 // create user/sign up -- POST
 if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
@@ -72,9 +68,11 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $result = $user->loginUser($email, $password);
     if (!$result) {
         header('HTTP/1.1 403');
-        die();
+        die("Invalid credentials");
     }
-    echo $result["user_id"];
+    $user_id = $result["user_id"];
+    $jwt = generateToken($user_id);
+    echo json_encode(["user_id" => $user_id, "token" => $jwt]);
 }
 
 // get one user -- GET
