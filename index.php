@@ -5,7 +5,7 @@ include_once("models/Restaurant.php");
 include_once("models/Review.php");
 include_once("utils/image_utils.php");
 include_once("utils/token_utils.php");
-
+$headers = getallheaders();
 // create user/sign up -- POST
 if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -79,12 +79,16 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $user_id = $_GET["user_id"];
-
-    $user = new User();
-    $result = $user->getOneUser($user_id);
-    $result["profile_pic"] = encodeBase64($result["profile_pic"]);
-
-    echo json_encode($result);
+    $jwt = extractToken($headers);
+    if (authenticateToken($jwt, $user_id)) {
+        $user = new User();
+        $result = $user->getOneUser($user_id);
+        $result["profile_pic"] = encodeBase64($result["profile_pic"]);
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 
 // get users -- GET

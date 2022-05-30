@@ -3,6 +3,7 @@ require_once(__DIR__ . "/../vendor/autoload.php");
 include_once(__DIR__ . "/../config/jwt_key.php");
 
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 
 function generateToken($UiD)
 {
@@ -15,18 +16,26 @@ function generateToken($UiD)
 
 function authenticateToken($JWT, $user_id)
 {
-    $decoded = JWT::decode($JWT, JWT_KEY, array("HS256"));
-    $payload = json_decode(json_encode($decoded), true);
+    try {
+        $decoded = JWT::decode($JWT, new Key(JWT_KEY, 'HS256'));
+        if ($decoded) {
+            $payload = json_decode(json_encode($decoded), true);
 
-    if ($payload["exp"] < time() && $payload["user_id"] == $user_id) {
-        return true;
-    } else {
+            if ($payload["exp"] > time() && $payload["user_id"] == $user_id) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } catch (Exception $e) {
         return false;
     }
 }
 
-function extractToken($server_object)
+function extractToken($headers)
 {
-    $auth = $server_object["Authorization"];
-    return explode(" ", $auth)[0];
+    $auth = $headers["Authorization"];
+    // preg_match('/Bearer\s(\S+)/', $auth, $matches);
+    // return $matches[1];
+    return explode(" ", $auth)[1];
 }
