@@ -5,7 +5,10 @@ include_once("models/Restaurant.php");
 include_once("models/Review.php");
 include_once("utils/image_utils.php");
 include_once("utils/token_utils.php");
+
 $headers = getallheaders();
+$jwt = extractToken($headers);
+
 // create user/sign up -- POST
 if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
@@ -79,7 +82,6 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $user_id = $_GET["user_id"];
-    $jwt = extractToken($headers);
     if (authenticateToken($jwt, $user_id)) {
         $user = new User();
         $result = $user->getOneUser($user_id);
@@ -93,15 +95,22 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
 // get users -- GET
 if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
-    $user = new User();
-    $result = $user->getUsers();
-    for ($i = 0; $i < count($result); $i++) {
-        if ($result[$i]["profile_pic"]) {
-            $result[$i]["profile_pic"] = encodeBase64($result[$i]["profile_pic"]);
-        }
-    }
 
-    echo json_encode($result);
+    $admin_id = $_GET["admin_id"];
+    if (authenticateToken($jwt, $admin_id)) {
+        $user = new User();
+        $result = $user->getUsers();
+        for ($i = 0; $i < count($result); $i++) {
+            if ($result[$i]["profile_pic"]) {
+                $result[$i]["profile_pic"] = encodeBase64($result[$i]["profile_pic"]);
+            }
+        }
+
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 
 ///////////////////////////////
