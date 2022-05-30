@@ -7,7 +7,6 @@ include_once("utils/image_utils.php");
 include_once("utils/token_utils.php");
 
 $headers = getallheaders();
-$jwt = extractToken($headers);
 
 // create user/sign up -- POST
 if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
@@ -39,27 +38,34 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     $user_id = $_POST["user_id"];
-    $email = $_POST["email"];
-    $first_name = $_POST["first_name"];
-    $last_name = $_POST["last_name"];
-    $dob = $_POST["dob"];
-    $profile_pic = $_POST["profile_pic"];
-    $gender = $_POST["gender"];
+    $jwt = extractToken($headers["Authorization"]);
 
-    $decoded_profile_pic = decodeBase64($profile_pic);
-    $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+    if (authenticateToken($jwt, $user_id)) {
+        $email = $_POST["email"];
+        $first_name = $_POST["first_name"];
+        $last_name = $_POST["last_name"];
+        $dob = $_POST["dob"];
+        $profile_pic = $_POST["profile_pic"];
+        $gender = $_POST["gender"];
 
-    $user = new User();
-    $affected_rows = $user->updateUser(
-        $user_id,
-        $email,
-        $first_name,
-        $last_name,
-        $dob,
-        $decoded_profile_pic_path,
-        $gender
-    );
-    echo $affected_rows;
+        $decoded_profile_pic = decodeBase64($profile_pic);
+        $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+
+        $user = new User();
+        $affected_rows = $user->updateUser(
+            $user_id,
+            $email,
+            $first_name,
+            $last_name,
+            $dob,
+            $decoded_profile_pic_path,
+            $gender
+        );
+        echo $affected_rows;
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 // login user -- POST
 if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
@@ -82,6 +88,7 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $user_id = $_GET["user_id"];
+    $jwt = extractToken($headers);
     if (authenticateToken($jwt, $user_id)) {
         $user = new User();
         $result = $user->getOneUser($user_id);
@@ -97,6 +104,7 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     $admin_id = $_GET["admin_id"];
+    $jwt = extractToken($headers);
     if (authenticateToken($jwt, $admin_id)) {
         $user = new User();
         $result = $user->getUsers();
@@ -114,7 +122,7 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
 }
 
 ///////////////////////////////
-// creat admin -- POST
+// create admin -- POST
 if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
     $email = $_POST["email"];
@@ -139,7 +147,9 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
         header('HTTP/1.1 403');
         die();
     }
-    echo $result["admin_id"];
+    $admin_id = $result["admin_id"];
+    $jwt = generateToken($admin_id);
+    echo json_encode(["admin_id" => $admin_id, "token" => $jwt]);
 }
 
 ///////////////////////////////////
