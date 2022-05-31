@@ -313,13 +313,11 @@ if ($_GET["action"] == "getReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
         $review = new Review();
         $result = $review->getReviews();
 
-        // echo json_encode($result);
+        echo json_encode($result);
     } else {
         header('HTTP/1.1 403');
         die("Access denied");
     }
-
-    echo json_encode($result);
 }
 
 //get pending reviews -- GET
