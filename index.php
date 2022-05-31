@@ -221,13 +221,24 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
         die("Access denied");
     }
 }
-// get restaurants -- GET
+// get restaurants admin-- GET
 if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
-
-    isset($_GET["admin_id"]) ? $rest_id = $_GET["rest_id"] : die("missing values");
+    isset($_GET["admin_id"]) ? $admin_id = $_GET["admin_id"] : die("missing values");
     $jwt = extractToken($headers);
     [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
     if ($is_auth && $user_type == "admin") {
+        $restaurant = new Restaurant();
+        $result = $restaurant->getRestaurants();
+
+        echo json_encode($result);
+    }
+}
+// get restaurants user-- GET
+if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    isset($_GET["user_id"]) ? $user_id = $_GET["user_id"] : die("missing values");
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    if ($is_auth && $user_type == "user") {
         $restaurant = new Restaurant();
         $result = $restaurant->getRestaurants();
 
