@@ -37,8 +37,9 @@ class Review extends Database
     }
     public function getReviews()
     {
-        $query_string = "SELECT user_id, review_content, rate
-                        FROM $this->table";
+        $query_string = "SELECT r.review_id, u.email, rest.rest_name, r.review_content, r.rate, r.status
+                        FROM $this->table r, users u, restaurants rest
+                        WHERE u.user_id = r.user_id AND rest.rest_id = r.rest_id";
         $result = $this->getRows($query_string);
         return $result;
     }

@@ -5,7 +5,8 @@ include_once("models/Restaurant.php");
 include_once("models/Review.php");
 include_once("utils/image_utils.php");
 include_once("utils/token_utils.php");
-
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
 $headers = getallheaders();
 
 // create user/sign up -- POST
@@ -106,7 +107,7 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $user_id = $result["user_id"];
     $jwt = generateToken($user_id, "user");
-    echo json_encode(["user_id" => $user_id, "token" => $jwt]);
+    echo json_encode(["admin_id" => $user_id, "token" => $jwt]);
 }
 
 // get one user -- GET
@@ -131,7 +132,7 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
     isset($_GET["admin_id"]) ? $admin_id = $_GET["admin_id"] : die("missing values");
     $jwt = extractToken($headers);
-    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
     if ($is_auth && $user_type == "admin") {
         $user = new User();
         $result = $user->getUsers();
@@ -263,5 +264,37 @@ if ($_GET["action"] == "getAcceptedRestaurantReviews" && $_SERVER["REQUEST_METHO
     echo json_encode($result);
 }
 // get reviews -- GET
+if ($_GET["action"] == "getReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
+    isset($_GET["admin_id"]) ? $admin_id = $_GET["admin_id"] : die("missing values");
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    if ($is_auth && $user_type == "admin") {
+        $review = new Review();
+        $result = $review->getReviews();
 
-// echo json_encode($returned);
+        // echo json_encode($result);
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
+
+    echo json_encode($result);
+}
+
+//get pending reviews -- GET
+// if ($_GET["action"] == "getPendingReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
+//     isset($_GET["admin_id"]) ? $admin_id = $_GET["admin_id"] : die("missing values");
+//     $jwt = extractToken($headers);
+//     [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+//     if ($is_auth && $user_type == "admin") {
+//         $review = new Review();
+//         $result = $review->getPendingReviews();
+
+//         echo json_encode($result);
+//     } else {
+//         header('HTTP/1.1 403');
+//         die("Access denied");
+//     }
+
+//     echo json_encode($result);
+// }
