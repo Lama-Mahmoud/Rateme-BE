@@ -148,8 +148,8 @@ if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
         $password = $_POST["password"];
     } else die("missing values");
 
-    $user = new Admin();
-    $affected_rows = $user->createAdmin(
+    $admin = new Admin();
+    $affected_rows = $admin->createAdmin(
         $email,
         $password,
     );
@@ -203,14 +203,17 @@ if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POS
 // get one restaurant -- GET
 if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
-    isset($_GET["rest_id"]) ? $rest_id = $_GET["rest_id"] : die("missing values");
+    if (isset($_GET["rest_id"], $_GET["user_id"])) {
+        $rest_id = $_GET["rest_id"];
+        $user_id = $_GET["user_id"];
+    } else {
+        die("missing values");
+    }
     $jwt = extractToken($headers);
-    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
     if ($is_auth && $user_type == "user") {
         $user = new Restaurant();
         $result = $user->getOneRestaurant($rest_id);
-        // $result["rest_pic"] = encodeBase64($result["rest_pic"]);
-        // $result["rest_pic"] = file_get_contents($result["rest_pic"]);
 
         echo json_encode($result);
     } else {
@@ -220,15 +223,16 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
 }
 // get restaurants -- GET
 if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
-    $restaurant = new Restaurant();
-    $result = $restaurant->getRestaurants();
-    // for ($i = 0; $i < count($result); $i++) {
-    //     if ($result[$i]["rest_pic"]) {
-    //         $result[$i]["rest_pic"] = encodeBase64($result[$i]["rest_pic"]);
-    //     }
-    // }
 
-    echo json_encode($result);
+    isset($_GET["admin_id"]) ? $rest_id = $_GET["rest_id"] : die("missing values");
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    if ($is_auth && $user_type == "admin") {
+        $restaurant = new Restaurant();
+        $result = $restaurant->getRestaurants();
+
+        echo json_encode($result);
+    }
 }
 
 // create review -- POST
