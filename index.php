@@ -18,7 +18,7 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
             $_POST["last_name"],
             $_POST["dob"],
             $_POST["password"],
-            $_POST["profile_pic"],
+            $_FILES["profile_pic"],
             $_POST["gender"]
         )
     ) {
@@ -27,12 +27,11 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
         $last_name = $_POST["last_name"];
         $dob = $_POST["dob"];
         $password = $_POST["password"];
-        $profile_pic = $_POST["profile_pic"];
+        $profile_pic = $_FILES["profile_pic"];
         $gender = $_POST["gender"];
     } else die("missing values");
 
-    $decoded_profile_pic = decodeBase64($profile_pic);
-    $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+    $profile_pic_path = saveImage($profile_pic, "user", $email);
 
     $user = new User();
     $affected_rows = $user->createUser(
@@ -41,7 +40,7 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
         $last_name,
         $dob,
         $password,
-        $decoded_profile_pic_path,
+        $profile_pic_path,
         $gender
     );
     echo $affected_rows;
@@ -59,7 +58,7 @@ if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
                 $_POST["first_name"],
                 $_POST["last_name"],
                 $_POST["dob"],
-                $_POST["profile_pic"],
+                $_FILES["profile_pic"],
                 $_POST["gender"]
             )
         ) {
@@ -67,13 +66,11 @@ if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
             $first_name = $_POST["first_name"];
             $last_name = $_POST["last_name"];
             $dob = $_POST["dob"];
-            $profile_pic = $_POST["profile_pic"];
+            $profile_pic = $_FILES["profile_pic"];
             $gender = $_POST["gender"];
         } else die("missing values");
 
-
-        $decoded_profile_pic = decodeBase64($profile_pic);
-        $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
+        $profile_pic_path = saveImage($profile_pic, "user", $email);
 
         $user = new User();
         $affected_rows = $user->updateUser(
@@ -82,7 +79,7 @@ if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
             $first_name,
             $last_name,
             $dob,
-            $decoded_profile_pic_path,
+            $profile_pic_path,
             $gender
         );
         echo $affected_rows;
@@ -116,10 +113,9 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
     isset($_GET["user_id"]) ? $user_id = $_GET["user_id"] : die("missing values");
     $jwt = extractToken($headers);
     [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
-    if ($is_auth && $user_type == "admin") {
+    if ($is_auth && ($user_type == "admin" || $user_type == "user")) {
         $user = new User();
         $result = $user->getOneUser($user_id);
-        $result["profile_pic"] = encodeBase64($result["profile_pic"]);
         echo json_encode($result);
     } else {
         header('HTTP/1.1 403');
@@ -136,11 +132,6 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
     if ($is_auth && $user_type == "admin") {
         $user = new User();
         $result = $user->getUsers();
-        for ($i = 0; $i < count($result); $i++) {
-            if ($result[$i]["profile_pic"]) {
-                $result[$i]["profile_pic"] = encodeBase64($result[$i]["profile_pic"]);
-            }
-        }
 
         echo json_encode($result);
     } else {
@@ -187,7 +178,7 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 // create restaurant -- POST
 if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    if (isset($_POST["rest_name"], $_POST["rest_desc"], $_GET["admin_id"])) {
+    if (isset($_POST["rest_name"], $_POST["rest_desc"], $_GET["admin_id"], $_FILES["rest_pic"])) {
         $admin_id = $_GET["admin_id"];
         $rest_name = $_POST["rest_name"];
         $rest_desc = $_POST["rest_desc"];
@@ -212,24 +203,30 @@ if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POS
 // get one restaurant -- GET
 if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
-    $rest_id = $_GET["rest_id"];
+    isset($_GET["rest_id"]) ? $rest_id = $_GET["rest_id"] : die("missing values");
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    if ($is_auth && $user_type == "user") {
+        $user = new Restaurant();
+        $result = $user->getOneRestaurant($rest_id);
+        // $result["rest_pic"] = encodeBase64($result["rest_pic"]);
+        // $result["rest_pic"] = file_get_contents($result["rest_pic"]);
 
-    $user = new Restaurant();
-    $result = $user->getOneRestaurant($rest_id);
-    // $result["rest_pic"] = encodeBase64($result["rest_pic"]);
-    $result["rest_pic"] = file_get_contents($result["rest_pic"]);
-
-    echo json_encode($result);
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 // get restaurants -- GET
 if ($_GET["action"] == "getRestaurants" && $_SERVER["REQUEST_METHOD"] === "GET") {
     $restaurant = new Restaurant();
     $result = $restaurant->getRestaurants();
-    for ($i = 0; $i < count($result); $i++) {
-        if ($result[$i]["rest_pic"]) {
-            $result[$i]["rest_pic"] = encodeBase64($result[$i]["rest_pic"]);
-        }
-    }
+    // for ($i = 0; $i < count($result); $i++) {
+    //     if ($result[$i]["rest_pic"]) {
+    //         $result[$i]["rest_pic"] = encodeBase64($result[$i]["rest_pic"]);
+    //     }
+    // }
 
     echo json_encode($result);
 }
