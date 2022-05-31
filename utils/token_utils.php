@@ -1,4 +1,6 @@
 <?php
+// using the __DIR__ magic variable to construct the path
+// of the autoload and jwt key for signing the token
 require_once(__DIR__ . "/../vendor/autoload.php");
 include_once(__DIR__ . "/../config/jwt_key.php");
 
@@ -7,11 +9,13 @@ use Firebase\JWT\Key;
 
 function generateToken($UiD, $user_type)
 {
+    // constructing the payload that will be encoded and added to the token
     $payload = [
-        "exp" => time() + 3600,
+        "exp" => time() + 3600, // time to live for the token in 1 hour|3600 seconds
         "user_id" => $UiD,
         "user_type" => $user_type
     ];
+    // returning the json web token
     return JWT::encode($payload, JWT_KEY, "HS256");
 }
 
@@ -21,6 +25,7 @@ function authenticateToken($JWT, $user_id)
         $decoded = JWT::decode($JWT, new Key(JWT_KEY, 'HS256'));
         $payload = json_decode(json_encode($decoded), true);
 
+        // checkin if the token has expired
         if ($payload["exp"] > time() && $payload["user_id"] == $user_id) {
             return [true, $payload["user_type"]];
         } else {
@@ -31,6 +36,7 @@ function authenticateToken($JWT, $user_id)
     }
 }
 
+// to extract the token from the authorizatio header "bearer token"
 function extractToken($headers)
 {
     $auth = $headers["Authorization"];

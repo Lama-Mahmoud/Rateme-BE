@@ -68,10 +68,4 @@ class Database
         if (count($rows) > 0) return $rows[0];
         return false;
     }
-
-    // public function createNewUser($username, $password, $firstname, $lastname)
-    // {
-    //     $this->query($query_string, $params_string, $params);
-    //     return $this->connection->affected_rows == 1 ? true : false;
-    // }
 }
