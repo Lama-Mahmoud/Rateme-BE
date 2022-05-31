@@ -286,11 +286,23 @@ if ($_GET["action"] == "updateReviewStatus" && $_SERVER["REQUEST_METHOD"] === "P
 }
 // get restaurant reviews -- GET
 if ($_GET["action"] == "getAcceptedRestaurantReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
-    $rest_id = $_GET["rest_id"];
-    $review = new Review();
-    $result = $review->getAcceptedRestaurantReviews($rest_id);
+    if (isset($_GET["rest_id"], $_GET["user_id"])) {
+        $rest_id = $_GET["rest_id"];
+        $user_id = $_GET["user_id"];
+    } else {
+        die("missing fields");
+    }
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    if ($is_auth && $user_type == "user") {
+        $review = new Review();
+        $result = $review->getAcceptedRestaurantReviews($rest_id);
 
-    echo json_encode($result);
+        echo json_encode($result);
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 // get reviews -- GET
 if ($_GET["action"] == "getReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
