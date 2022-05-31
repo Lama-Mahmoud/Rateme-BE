@@ -166,8 +166,10 @@ if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 // login admin -- POST
 if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+    if (isset($_POST["email"], $_POST["password"])) {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+    } else die("missing values");
 
     $admin = new Admin();
     $result = $admin->loginAdmin($email, $password);
