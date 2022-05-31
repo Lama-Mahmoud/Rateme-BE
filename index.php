@@ -10,14 +10,25 @@ $headers = getallheaders();
 
 // create user/sign up -- POST
 if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $email = $_POST["email"];
-    $first_name = $_POST["first_name"];
-    $last_name = $_POST["last_name"];
-    $dob = $_POST["dob"];
-    $password = $_POST["password"];
-    $profile_pic = $_POST["profile_pic"];
-    $gender = $_POST["gender"];
+    if (
+        isset(
+            $_POST["email"],
+            $_POST["first_name"],
+            $_POST["last_name"],
+            $_POST["dob"],
+            $_POST["password"],
+            $_POST["profile_pic"],
+            $_POST["gender"]
+        )
+    ) {
+        $email = $_POST["email"];
+        $first_name = $_POST["first_name"];
+        $last_name = $_POST["last_name"];
+        $dob = $_POST["dob"];
+        $password = $_POST["password"];
+        $profile_pic = $_POST["profile_pic"];
+        $gender = $_POST["gender"];
+    } else die("missing values");
 
     $decoded_profile_pic = decodeBase64($profile_pic);
     $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
@@ -37,16 +48,28 @@ if ($_GET["action"] == "createUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 //update user -- POST
 if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $user_id = $_POST["user_id"];
+    isset($_POST["user_id"]) ? $user_id = $_POST["user_id"] : die("missing values");
     $jwt = extractToken($headers["Authorization"]);
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    if ($is_auth && $user_type == "user") {
+        if (
+            isset(
+                $_POST["email"],
+                $_POST["first_name"],
+                $_POST["last_name"],
+                $_POST["dob"],
+                $_POST["profile_pic"],
+                $_POST["gender"]
+            )
+        ) {
+            $email = $_POST["email"];
+            $first_name = $_POST["first_name"];
+            $last_name = $_POST["last_name"];
+            $dob = $_POST["dob"];
+            $profile_pic = $_POST["profile_pic"];
+            $gender = $_POST["gender"];
+        } else die("missing values");
 
-    if (authenticateToken($jwt, $user_id)) {
-        $email = $_POST["email"];
-        $first_name = $_POST["first_name"];
-        $last_name = $_POST["last_name"];
-        $dob = $_POST["dob"];
-        $profile_pic = $_POST["profile_pic"];
-        $gender = $_POST["gender"];
 
         $decoded_profile_pic = decodeBase64($profile_pic);
         $decoded_profile_pic_path = saveImage($decoded_profile_pic, "user", $email);
@@ -70,8 +93,10 @@ if ($_GET["action"] == "updateUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 // login user -- POST
 if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+    if (isset($_POST["email"], $_POST["password"])) {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+    } else die("missing values");
 
     $user = new User();
     $result = $user->loginUser($email, $password);
@@ -80,16 +105,17 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
         die("Invalid credentials");
     }
     $user_id = $result["user_id"];
-    $jwt = generateToken($user_id);
+    $jwt = generateToken($user_id, "user");
     echo json_encode(["user_id" => $user_id, "token" => $jwt]);
 }
 
 // get one user -- GET
 if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
-    $user_id = $_GET["user_id"];
+    isset($_GET["user_id"]) ? $user_id = $_GET["user_id"] : die("missing values");
     $jwt = extractToken($headers);
-    if (authenticateToken($jwt, $user_id)) {
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    if ($is_auth && $user_type == "admin") {
         $user = new User();
         $result = $user->getOneUser($user_id);
         $result["profile_pic"] = encodeBase64($result["profile_pic"]);
@@ -103,9 +129,10 @@ if ($_GET["action"] == "getOneUser" && $_SERVER["REQUEST_METHOD"] === "GET") {
 // get users -- GET
 if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
 
-    $admin_id = $_GET["admin_id"];
+    isset($_GET["admin_id"]) ? $admin_id = $_GET["admin_id"] : die("missing values");
     $jwt = extractToken($headers);
-    if (authenticateToken($jwt, $admin_id)) {
+    [$is_auth, $user_type] = authenticateToken($jwt, $user_id);
+    if ($is_auth && $user_type == "admin") {
         $user = new User();
         $result = $user->getUsers();
         for ($i = 0; $i < count($result); $i++) {
@@ -124,9 +151,10 @@ if ($_GET["action"] == "getUsers" && $_SERVER["REQUEST_METHOD"] === "GET") {
 ///////////////////////////////
 // create admin -- POST
 if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
-
-    $email = $_POST["email"];
-    $password = $_POST["password"];
+    if (isset($_POST["email"], $_POST["password"])) {
+        $email = $_POST["email"];
+        $password = $_POST["password"];
+    } else die("missing values");
 
     $user = new Admin();
     $affected_rows = $user->createAdmin(
@@ -148,7 +176,7 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
         die();
     }
     $admin_id = $result["admin_id"];
-    $jwt = generateToken($admin_id);
+    $jwt = generateToken($admin_id, "admin");
     echo json_encode(["admin_id" => $admin_id, "token" => $jwt]);
 }
 
