@@ -151,7 +151,7 @@ if ($_GET["action"] == "createAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
     $admin = new Admin();
     $affected_rows = $admin->createAdmin(
         $email,
-        $password,
+        $password
     );
     echo $affected_rows;
 }
