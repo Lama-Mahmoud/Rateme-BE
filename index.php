@@ -265,14 +265,24 @@ if ($_GET["action"] == "createReview" && $_SERVER["REQUEST_METHOD"] === "POST") 
 // update review status-- POST
 if ($_GET["action"] == "updateReviewStatus" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $review_id = $_POST["review_id"];
-    $new_status = $_POST["new_status"];
-    $review = new Review();
-    $affected_rows = $review->updateReviewStatus(
-        $review_id,
-        $new_status
-    );
-    echo $affected_rows;
+    if (isset($_POST["review_id"], $_POST["new_status"], $_GET["admin_id"])) {
+        $admin_id = $_GET["admin_id"];
+        $review_id = $_POST["review_id"];
+        $new_status = $_POST["new_status"];
+    }
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    if ($is_auth && $user_type == "admin") {
+        $review = new Review();
+        $affected_rows = $review->updateReviewStatus(
+            $review_id,
+            $new_status
+        );
+        echo $affected_rows;
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 // get restaurant reviews -- GET
 if ($_GET["action"] == "getAcceptedRestaurantReviews" && $_SERVER["REQUEST_METHOD"] === "GET") {
