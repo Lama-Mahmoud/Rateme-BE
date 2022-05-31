@@ -107,7 +107,7 @@ if ($_GET["action"] == "loginUser" && $_SERVER["REQUEST_METHOD"] === "POST") {
     }
     $user_id = $result["user_id"];
     $jwt = generateToken($user_id, "user");
-    echo json_encode(["admin_id" => $user_id, "token" => $jwt]);
+    echo json_encode(["user_id" => $user_id, "token" => $jwt]);
 }
 
 // get one user -- GET
@@ -187,20 +187,27 @@ if ($_GET["action"] == "loginAdmin" && $_SERVER["REQUEST_METHOD"] === "POST") {
 // create restaurant -- POST
 if ($_GET["action"] == "createRestaurant" && $_SERVER["REQUEST_METHOD"] === "POST") {
 
-    $rest_name = $_POST["rest_name"];
-    $rest_desc = $_POST["rest_desc"];
-    $rest_pic = $_POST["rest_pic"];
-
-    $decoded_rest_pic = decodeBase64($rest_pic);
-    $decoded_rest_pic_path = saveImage($decoded_rest_pic, "restaurant", $rest_name);
-
-    $restaurant = new Restaurant();
-    $affected_rows = $restaurant->createRestaurant(
-        $rest_name,
-        $rest_desc,
-        $decoded_rest_pic_path
-    );
-    echo $affected_rows;
+    if (isset($_POST["rest_name"], $_POST["rest_desc"], $_GET["admin_id"])) {
+        $admin_id = $_GET["admin_id"];
+        $rest_name = $_POST["rest_name"];
+        $rest_desc = $_POST["rest_desc"];
+        $rest_pic = $_FILES["rest_pic"];
+    } else die("missing values");
+    $jwt = extractToken($headers);
+    [$is_auth, $user_type] = authenticateToken($jwt, $admin_id);
+    if ($is_auth && $user_type == "admin") {
+        $rest_pic_path = saveImage($rest_pic, "restaurant", $rest_name);
+        $restaurant = new Restaurant();
+        $affected_rows = $restaurant->createRestaurant(
+            $rest_name,
+            $rest_desc,
+            $rest_pic_path
+        );
+        echo $affected_rows;
+    } else {
+        header('HTTP/1.1 403');
+        die("Access denied");
+    }
 }
 // get one restaurant -- GET
 if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET") {
@@ -209,7 +216,8 @@ if ($_GET["action"] == "getOneRestaurant" && $_SERVER["REQUEST_METHOD"] === "GET
 
     $user = new Restaurant();
     $result = $user->getOneRestaurant($rest_id);
-    $result["rest_pic"] = encodeBase64($result["rest_pic"]);
+    // $result["rest_pic"] = encodeBase64($result["rest_pic"]);
+    $result["rest_pic"] = file_get_contents($result["rest_pic"]);
 
     echo json_encode($result);
 }

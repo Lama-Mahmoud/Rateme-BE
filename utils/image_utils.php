@@ -6,12 +6,15 @@ function decodeBase64($base64_image_data)
     return $img;
 }
 
-function saveImage($decoded_image_date, $category, $identifier)
+function saveImage($picture, $category, $identifier)
 {
     $timestamp = time();
-    $path = "images/$category/$identifier-$timestamp";
-    file_put_contents($path, $decoded_image_date);
-    return $path;
+    $temp_path = $picture["tmp_name"];
+    $extension = explode("/", $picture["type"])[1];
+    $new_path = "images/$category/$identifier-$timestamp.$extension";
+    move_uploaded_file($temp_path, $new_path);
+    // file_put_contents($path, $decoded_image_date);
+    return $new_path;
 }
 
 function encodeBase64($image_path)
